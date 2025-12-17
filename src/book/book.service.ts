@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Book } from './entities/book.entity';
 
 @Injectable()
 export class BookService {
+  constructor(
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>,
+  ) {}
+
   create(createBookDto: CreateBookDto) {
-    return 'This action adds a new book';
+    return this.bookRepository.save(createBookDto);
   }
 
   findAll() {
-    return `This action returns all book`;
+    // relations: ['category'] คือสั่งให้ดึงข้อมูลหมวดหมู่มาโชว์ด้วย
+    return this.bookRepository.find({ relations: ['category'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
+  async findOne(id: string) {
+    const book = await this.bookRepository.findOne({
+      where: { id },
+      relations: ['category'],
+    });
+    if (!book) throw new NotFoundException(`Book #${id} not found`);
+    return book;
   }
 
-  update(id: number, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
+  update(id: string, updateBookDto: UpdateBookDto) {
+    return this.bookRepository.update(id, updateBookDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+  remove(id: string) {
+    return this.bookRepository.delete(id);
+  }
+
+  async incrementLikes(id: string) {
+    const book = await this.findOne(id);
+    book.likeCount += 1;
+    return this.bookRepository.save(book);
   }
 }
