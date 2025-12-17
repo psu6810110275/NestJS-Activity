@@ -18,17 +18,17 @@ export class BookCategoryController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.bookCategoryService.findOne(+id);
+  findOne(@Param('id') id: string) { // ✅ ใช้ string
+    return this.bookCategoryService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBookCategoryDto: UpdateBookCategoryDto) {
-    return this.bookCategoryService.update(+id, updateBookCategoryDto);
+    return this.bookCategoryService.update(id, updateBookCategoryDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.bookCategoryService.remove(+id);
+    return this.bookCategoryService.remove(id);
   }
 }

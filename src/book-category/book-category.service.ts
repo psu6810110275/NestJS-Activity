@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateBookCategoryDto } from './dto/create-book-category.dto';
 import { UpdateBookCategoryDto } from './dto/update-book-category.dto';
-import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { BookCategory } from './entities/book-category.entity';
 
 @Injectable()
-export class BookCategoryService {
+export class BookCategoryService implements OnModuleInit {
   
   constructor(
     @InjectRepository(BookCategory)
     private readonly bookCategoryRepository: Repository<BookCategory>,
   ) {}
 
+  // ✅ Data Seeding: สร้างข้อมูลตัวอย่างถ้าตารางยังว่าง
   async onModuleInit() {
     const count = await this.bookCategoryRepository.count();
     if (count === 0) {
@@ -27,25 +28,22 @@ export class BookCategoryService {
   }
 
   create(createBookCategoryDto: CreateBookCategoryDto) {
-    return 'This action adds a new bookCategory';
+    return this.bookCategoryRepository.save(createBookCategoryDto);
   }
-  
+
   findAll() {
-    return `This action returns all bookCategory`;
+    return this.bookCategoryRepository.find(); // ✅ ดึงข้อมูลจริงจาก DB
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} bookCategory`;
+  findOne(id: string) { // ✅ รับ id เป็น string
+    return this.bookCategoryRepository.findOneBy({ id });
   }
 
-  update(id: number, updateBookCategoryDto: UpdateBookCategoryDto) {
-    return `This action updates a #${id} bookCategory`;
+  update(id: string, updateBookCategoryDto: UpdateBookCategoryDto) { // ✅ รับ id เป็น string
+    return this.bookCategoryRepository.update(id, updateBookCategoryDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} bookCategory`;
+  remove(id: string) { // ✅ รับ id เป็น string
+    return this.bookCategoryRepository.delete(id);
   }
-
-  
-
 }

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookCategoryModule } from './book-category/book-category.module';
-import { BookCategory } from './book-category/entities/book-category.entity';
 
 @Module({
   imports: [
@@ -12,12 +11,10 @@ import { BookCategory } from './book-category/entities/book-category.entity';
       username: 'admin',
       password: 'password123',
       database: 'bookstore_dev',
-      entities: [BookCategory], // เราจะเพิ่ม Entities ที่นี่ในภายหลัง
-      synchronize: true, // สร้าง Table อัตโนมัติ (ใช้สำหรับ Dev เท่านั้น)
+      autoLoadEntities: true, // ✅ โหลด Entity อัตโนมัติ ไม่ต้องใส่ array เอง
+      synchronize: true,      // ✅ สร้างตารางให้อัตโนมัติ (ใช้เฉพาะตอน Dev)
     }),
     BookCategoryModule,
   ],
 })
 export class AppModule {}
-
-
