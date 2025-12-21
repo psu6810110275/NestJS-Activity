@@ -34,8 +34,15 @@ export class BookService {
     return this.bookRepository.update(id, updateBookDto);
   }
 
-  remove(id: string) {
-    return this.bookRepository.delete(id);
+  async remove(id: string) {
+    const result = await this.bookRepository.delete(id);
+    
+    // 👇 เช็คตรงนี้: ถ้าไม่มีแถวไหนโดนกระทบ (affected === 0) แปลว่า ID มั่ว
+    if (result.affected === 0) {
+      throw new NotFoundException(`Book #${id} not found`);
+    }
+
+    return { message: `Book #${id} deleted successfully` };
   }
 
   async incrementLikes(id: string) {
